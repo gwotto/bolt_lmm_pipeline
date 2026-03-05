@@ -1,0 +1,93 @@
+
+############################################################################
+### USER PARAMETERS ########################################################
+############################################################################
+
+## == samples and models ==
+
+## path to pheno file. See the example file sample.phenotype.txt in the data directory
+pheno-file:
+
+## output directory, to be defined by the user
+outdir: 
+
+## directory for temporary files, e.g. the user's ephemeral directory
+tempdir: /rds/general/user/$USER/ephemeral/
+
+## True or False. If true, temporary files are deleted at the end of the run
+temp-delete: True
+
+## Covariates, categorial and quantitative, from sample file. syntax:
+## cov-1: cat_cov1,...,cat_covn;quant_cov1,...,quant_covn
+cov-1: Sex,Center;Age,PC1,PC2,PC3,PC4
+
+## comma-separated list of phenotypes. currently only working with
+## first phenotype
+pheno-1: log_Mean_cIMT_Max
+
+## file listing samples to remove, leave empty if not needed
+remove-samples-list:
+
+
+############################################################################
+### INPUT DATA ########################################################
+############################################################################
+
+## Sample information file for imputed data in bgen format format,
+## required by bolt-lmm
+sample-file: /rds/general/project/medbio-epiukb-archive-2018/live/UKB_pheno/UKBdownloads/ukb23_imp_chr21_v2_s487406.sample
+
+## Sample information file for genotype data in .fam format, required
+## by plink to generate intermediate fam fles
+fam-file: /rds/general/project/medbio-epiukb-archive-2018/live/UKB_pheno/UKBdownloads/ukb23_cal_chr21_v2_s488374.fam
+
+## directory containing core snp files (.bed and .bim format) and
+## imputed snp files (.bgen format) fixed 2018 release (v3), points to
+## files in release_12032018
+data-dir: /rds/general/project/uk-biobank-2017/live/reference/sdata_latest
+
+## prefix of core snp files (.bed and .bim format) in data-dir
+gen-base: ukb_gen_chr
+
+## prefix of imputed snp files (.bgen format) in data-dir
+imp-base: ukb_imp_chr
+
+ldscore-file: /rds/general/project/uk-biobank-2017/live/sresources_latest/bin/BOLT-LMM_v2.3/tables/LDSCORE.1000G_EUR.tab.gz
+
+
+############################
+### EXECUTION PARAMETERS ###
+############################
+
+## filtering parameters for the selection of core SNPs by plink
+thr-maf: 0.05
+thr-geno: 0.015
+thr-hwe: 1e-6
+
+## filtering parameters for the selection of SNPs by bolt-lmm
+min-maf: 0.01
+min-info: 0.1
+
+## chunk size: 5x10^6 snps per chunk
+chunksize: 5000000
+ncpus: 8 # per run-bolt job
+
+## comma-separated list of chromosomes to analyse, can contain 'X' and 'XY'
+## if commented out the default set of 1..22 will be used
+chr-list: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22
+
+
+############################################################################
+### ONLY CHANGE BELOW THIS LINE IF YOU ARE SURE ABOUT WHAT YOU ARE DOING ###
+############################################################################
+
+## additional BOLT-LMM output
+## output betas for risk prediction (--predBetasFile flag); set to yes to get betas under ranges_betas/
+get_betas: no
+
+## SNPS_TO_KEEP=${SRESOURCES}/annotation/snps_all/all_imp_minus_discordant.snplist
+
+module-init: /usr/share/Modules/init/python.py 
+
+## comma separated list of modules
+module-list: plink/1.90p, bolt-lmm/2.3, bgenix/2017-05-15

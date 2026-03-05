@@ -1,0 +1,155 @@
+\documentclass[border=0.5cm]{standalone}
+
+\usepackage[latin1]{inputenc}
+\usepackage{tikz}
+\usetikzlibrary{shapes, shapes.misc, arrows, positioning}
+\usetikzlibrary{backgrounds,fit,calc}
+
+\begin{document}
+\pagestyle{empty}
+
+\tikzset{
+  background1/.style={
+    draw,
+    %fill=yellow!30,
+    align=left
+  }}
+
+
+%% block styles
+
+\tikzstyle{processblock} = [rectangle, draw=gray, fill=blue!5,
+minimum width=5em, text centered, rounded corners, minimum height=4em]
+
+\tikzstyle{datablock} = [draw=gray, chamfered rectangle, chamfered rectangle corners=north east, minimum height=2em]
+
+\tikzstyle{line} = [draw, -latex']
+
+
+
+\begin{tikzpicture}
+
+        
+  \node [processblock] (init) {initialize-pipeline.py};
+
+  \node [processblock, below= of init] (main1) {main.py};
+
+  \node [datablock, left= of main1] (config) {config.yml};
+
+  
+  \node [datablock, right= of main1] (samples) {samples-file};
+  \node [datablock, above= 0.2cm of samples] (pheno) {pheno-file};
+  \node [datablock, below= 0.2cm of samples] (fam) {fam-file};
+  
+  \node [processblock, below=1.5cm of main1] (plink2) {run-plink.py};
+
+  \node [processblock, left= of plink2] (plink1) {run-plink.py};
+
+  \node [processblock, right= of plink2] (plink3) {run-plink.py};
+
+  \node [processblock, below=1.5cm of plink2] (main2) {main.py};
+
+
+  \node [processblock, below=1.5cm of main2] (bolt2) {run-bolt.py};
+
+  \node [processblock, left= of bolt2] (bolt1) {run-bolt.py};
+
+  \node [processblock, right= of bolt2] (bolt3) {run-bolt.py};
+
+
+  \node [processblock, below=1.5cm of bolt2] (main3) {main.py};
+
+  \node [datablock, below= of main3] (output) {bolt-lmm output};
+
+  
+  % \node [outputblock, below= of pipeline1] (vcf1) {sample-1.vcf};
+  % \node [outputblock, below= of pipeline2] (vcf2) {sample-2.vcf};
+  % \node [outputblock, below= of pipeline3] (vcf3) {sample-3.vcf};
+
+  \path [line] (init) edge
+    (main1);
+  
+  \path [line] (config) edge
+    (main1);
+
+    \path [line] (pheno) edge
+    (main1);
+
+    \path [line] (samples) edge
+    (main1);
+    
+    \path [line] (fam) edge
+    (main1);
+    
+    \path [line] (main1) edge
+    node[left, align=center](chromosome1) {chr\_1}
+    (plink1);
+
+    \path [line] (main1) edge
+    node[left, align=center](chromosome2) {chr\_2}
+    (plink2);
+
+    \path [line] (main1) edge
+    node[left, align=center](chromosome3) {chr\_n}
+    (plink3);
+
+    \path [line] (plink1) edge
+    % node[left, align=center](chromosome1-1) {chr 1}
+    (main2);
+
+    \path [line] (plink2) edge
+    % node[left, align=center](chromosome1-1) {chr 1}
+    (main2);
+
+    \path [line] (plink3) edge
+    % node[left, align=center](chromosome1-1) {chr 1}
+    (main2);
+
+
+    \path [line] (main2) edge
+    node[left, align=center](chunk1) {chunk\_1}
+    (bolt1);
+
+    \path [line] (main2) edge
+    node[left, align=center](chunk2) {chunk\_2}
+    (bolt2);
+
+    \path [line] (main2) edge
+    node[right, align=center](chunk3) {chunk\_n}
+    (bolt3);
+
+    
+    \path [line] (bolt1) edge
+    (main3);
+
+    \path [line] (bolt2) edge
+    (main3);
+
+    \path [line] (bolt3) edge
+    (main3);
+
+    \path [line] (main3) edge
+    % node[left, align=center](chromosome1-1) {chr 1}
+    (output);
+
+    
+
+    % \path [line] (pipeline1) edge
+    % (vcf1);
+
+    % \path [line] (pipeline2) edge
+    % (vcf2);
+
+    % \path [line] (pipeline3) edge
+    % (vcf3);
+
+
+    
+  \end{tikzpicture}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:
